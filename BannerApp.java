@@ -1,65 +1,53 @@
-class CharacterPatternMap {
-    char character;
-    String[] pattern;
-
-    public CharacterPatternMap(char character, String[] pattern) {
-        this.character = character;
-        this.pattern = pattern;
-    }
-
-    public char getCharacter() { return character; }
-    public String[] getPattern() { return pattern; }
-}
+import java.util.HashMap;
 
 public class BannerApp {
 
     public static void main(String[] args) {
-        CharacterPatternMap[] charMaps = createCharacterPatternMaps();
-        printMessage("OPS ", charMaps);
+        HashMap<Character, String[]> charMap = createCharacterMap();
+        displayBanner("SOS", charMap);
     }
 
-    public static CharacterPatternMap[] createCharacterPatternMaps() {
-        CharacterPatternMap[] maps = new CharacterPatternMap[4];
+    /**
+     * Initializes a HashMap where each character is mapped 
+     * to its corresponding ASCII pattern.
+     */
+    public static HashMap<Character, String[]> createCharacterMap() {
+        HashMap<Character, String[]> charMap = new HashMap<>();
 
-        // Defining 5-row patterns for 'O', 'P', 'S', and space
-        maps[0] = new CharacterPatternMap('O', new String[]{
-            "  OOO  ", " O   O ", " O   O ", " O   O ", "  OOO  "
-        });
-        maps[1] = new CharacterPatternMap('P', new String[]{
-            " OOOO  ", " O   O ", " OOOO  ", " O     ", " O     "
-        });
-        maps[2] = new CharacterPatternMap('S', new String[]{
+        // Populate with patterns for 'S' and 'O'
+        charMap.put('S', new String[]{
             "  OOOO ", " O     ", "  OOO  ", "     O ", " OOOO  "
         });
-        maps[3] = new CharacterPatternMap(' ', new String[]{
+        charMap.put('O', new String[]{
+            "  OOO  ", " O   O ", " O   O ", " O   O ", "  OOO  "
+        });
+        // Adding a space pattern for safety
+        charMap.put(' ', new String[]{
             "       ", "       ", "       ", "       ", "       "
         });
 
-        return maps;
+        return charMap;
     }
 
-    public static String[] getCharacterPattern(char ch, CharacterPatternMap[] charMaps) {
-        for (CharacterPatternMap map : charMaps) {
-            if (map.getCharacter() == Character.toUpperCase(ch)) {
-                return map.getPattern();
+    /**
+     * Renders the banner by looping through each row of the pattern height.
+     */
+    public static void displayBanner(String message, HashMap<Character, String[]> charMap) {
+        int patternHeight = 5;
+
+        // Loop through each line (row) of the ASCII art
+        for (int line = 0; line < patternHeight; line++) {
+            StringBuilder sb = new StringBuilder();
+
+            // Assemble the current row for every character in the message
+            for (char ch : message.toUpperCase().toCharArray()) {
+                // retrieve pattern from map; default to space if char not found
+                String[] pattern = charMap.getOrDefault(ch, charMap.get(' '));
+                sb.append(pattern[line]).append("  "); 
             }
-        }
-        return charMaps[3].getPattern(); // Return space pattern as default
-    }
-
-    public static void printMessage(String message, CharacterPatternMap[] charMaps) {
-        int patternHeight = 5; // All patterns have 5 rows
-
-        // Loop through each row of the banner
-        for (int row = 0; row < patternHeight; row++) {
-            StringBuilder line = new StringBuilder();
             
-            // For the current row, append that specific row for each character in the message
-            for (char ch : message.toCharArray()) {
-                String[] pattern = getCharacterPattern(ch, charMaps);
-                line.append(pattern[row]).append(" "); // Add a space between characters
-            }
-            System.out.println(line.toString());
+            // Print the completed horizontal line
+            System.out.println(sb.toString());
         }
     }
 }
